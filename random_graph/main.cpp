@@ -24,7 +24,6 @@ int main()
    }
 
    Random_Graph G = Random_Graph(number_vertices);
-   G.displayAdjacencyList();
-
+   G.customIteration();
    return 0;
 }

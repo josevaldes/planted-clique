@@ -2,7 +2,7 @@
 #define VERTEX_H
 
 #include <iostream>
-#include <vector>
+#include <map>
 
 using namespace std;
 
@@ -10,12 +10,12 @@ class Vertex
 {
 private:
     int label;
-    vector<int> edges;
+    map<int,int> edges;
 
 public:
     Vertex(int lb);
-    int getLabel() const;
-    vector<int> getEdges() const;
+    const int & getLabel() const;
+    const map<int,int>& getEdges() const;
     void addEdge(int lb);
 };
 

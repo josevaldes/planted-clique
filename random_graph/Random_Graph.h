@@ -16,6 +16,7 @@ private:
 public:
     Random_Graph(int n);
     void displayAdjacencyList();
+    void customIteration();
 };
 
 #endif
