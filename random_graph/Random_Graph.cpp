@@ -9,21 +9,21 @@
 
 using namespace std;
 
-Random_Graph::Random_Graph(int n):n_vertices(n+1)
+Random_Graph::Random_Graph(unsigned int n):n_vertices(n+1), k_vertices(0)
 {
    vertices = new Vertex*[n_vertices];
    srand(time(0));
    
-   for(int i = 0; i < n_vertices; ++i)
+   for(unsigned int i = 0; i < n_vertices; ++i)
    {
        vertices[i] = new Vertex(i);
    }
 
-   for(int u = 1; u < n_vertices; ++u)
+   for(unsigned int u = 1; u < n_vertices; ++u)
    {
-       for(int v = u + 1; v < n_vertices; ++v)
+       for(unsigned int v = u + 1; v < n_vertices; ++v)
        {
-	   int indicator = rand() % 2;
+	   unsigned int indicator = rand() % 2;
 	   
            if(indicator)
            {
@@ -32,19 +32,21 @@ Random_Graph::Random_Graph(int n):n_vertices(n+1)
            }
        }
    }
+
+   --n_vertices;
 }
 
 void Random_Graph::displayAdjacencyList()
 {
     cout << "Adjacency List\n";
 
-    for(int i = 1; i < n_vertices; ++i)
+    for(unsigned int i = 1; i < n_vertices; ++i)
     {
         cout << "Vertex " << i <<":\n";
 
-	map<int,int> currEdges = vertices[i]->getEdges();
+	map<unsigned int,unsigned int> currEdges = vertices[i]->getEdges();
 
-	for(map<int,int>::iterator it = currEdges.begin(); it != currEdges.end(); ++it)
+	for(map<unsigned int,unsigned int>::iterator it = currEdges.begin(); it != currEdges.end(); ++it)
 	{
             cout << "   v"<< it->first<<endl;
 	}
@@ -54,8 +56,8 @@ void Random_Graph::displayAdjacencyList()
 void Random_Graph::customIteration()
 {
     bool quit = false;
-    int iterator = 1;
-    int temp = 1;
+    unsigned int iterator = 1;
+    unsigned int temp = 1;
     string input = "";
 
     cout << "Move around the graph as you like. Enter the number of the vertex you want to go next.\n";
@@ -66,8 +68,8 @@ void Random_Graph::customIteration()
        cout<< "Current vertex: " << iterator <<endl;
        cout<< "Adjacent vertices: "<<endl;
        
-       map<int,int> currEdges = vertices[iterator]->getEdges();
-       for(map<int,int>::iterator it = currEdges.begin(); it != currEdges.end(); ++it)
+       map<unsigned int,unsigned int> currEdges = vertices[iterator]->getEdges();
+       for(map<unsigned int,unsigned int>::iterator it = currEdges.begin(); it != currEdges.end(); ++it)
        {
            cout << "   v"<< it->first<<endl;
        }
@@ -109,3 +111,48 @@ void Random_Graph::customIteration()
        }
     }
 }
+
+void Random_Graph::plantClique(unsigned int k)
+{
+    srand(time(0));
+    
+    bool indicators[n_vertices + 1];
+    for(unsigned int i = 0; i < n_vertices + 1; ++i)
+    {
+        indicators[i] = false;
+    }
+
+    unsigned int k_elem[k];
+
+    while(k_vertices < k)
+    {
+        unsigned int index = (rand() % n_vertices) + 1;
+	
+	if(!indicators[index])
+	{
+	    k_elem[k_vertices] = index;
+
+            ++k_vertices;
+	    indicators[index] = true;
+	}
+
+    }
+
+    cout << "Clique planted in vertices:\n";
+    
+    for(unsigned int i = 0; i < k_vertices; ++i)
+    {
+        cout << "  v" << k_elem[i]<< endl;
+    }
+    
+    for(unsigned int i = 0; i < k_vertices; ++i)
+    {
+        for(unsigned int j = i + 1; j < k_vertices; ++j)
+	{
+            vertices[k_elem[i]]->addEdge(k_elem[j]);
+	    vertices[k_elem[j]]->addEdge(k_elem[i]);
+	}
+    }
+    
+}
+

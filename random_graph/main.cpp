@@ -5,25 +5,52 @@
 
 using namespace std;
 
-int main()
+int main(int argc, char* argv[])
 {
-   string input = "";
-   int number_vertices = 0;
-   while(true)
+   if(argc < 2 || argc > 3)
    {
-       cout << "Enter the number of vertices for this graph: ";
-       getline(cin, input);
-
-       stringstream myStream(input);
-       if (myStream >> number_vertices && number_vertices > 0)
-       {
-           break;
-       }
-
-       cerr << "Invalid number, please try again\n";
+       cerr << "Number of parameters incorrect. Enter number of vertices ";
+       cerr << "as first parameter, and optionally, the size of a planted ";
+       cerr << "clique as second parameter\n";
+       return -1;
    }
 
+   string input = argv[1];
+   int number_vertices = 0;
+   int planted_vertices = 0;
+   
+   stringstream myStream(argv[1]);
+   if (myStream >> number_vertices && number_vertices > 0)
+   {
+       if(argc == 3)
+       {
+           stringstream mySStream(argv[2]);
+	   
+	   if(mySStream >> planted_vertices && planted_vertices > 0)
+	   {
+           }
+
+	   else
+	   {
+               cerr << "Second argument format is incorrect. Restart program\n";
+	       return -1;
+	   }
+       }
+   }
+
+   else
+   {
+       cerr << "First argument format is incorrect. Restart program\n";
+       return -1;
+   }
+
+
    Random_Graph G = Random_Graph(number_vertices);
-   G.customIteration();
+   
+   if(planted_vertices > 0)
+   {
+       G.plantClique(planted_vertices);
+   }
+   // G.customIteration();
    return 0;
 }

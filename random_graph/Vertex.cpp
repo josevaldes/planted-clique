@@ -4,21 +4,22 @@
 
 using namespace std;
 
-Vertex::Vertex(int lb):label(lb)
+Vertex::Vertex(unsigned int lb):label(lb), degree(0)
 {
 }
 
-const int& Vertex::getLabel() const
+const unsigned int& Vertex::getLabel() const
 {
     return label;
 }
 
-const map<int,int>& Vertex::getEdges() const
+const map<unsigned int,unsigned int>& Vertex::getEdges() const
 {
     return edges;
 }
 
-void Vertex::addEdge(int lb)
+void Vertex::addEdge(unsigned int lb)
 {
     edges[lb] = lb;
+    ++degree;
 }

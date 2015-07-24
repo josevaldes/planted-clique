@@ -9,14 +9,15 @@ using namespace std;
 class Vertex
 {
 private:
-    int label;
-    map<int,int> edges;
+    unsigned int label;
+    unsigned int degree;
+    map<unsigned int,unsigned int> edges;
 
 public:
-    Vertex(int lb);
-    const int & getLabel() const;
-    const map<int,int>& getEdges() const;
-    void addEdge(int lb);
+    Vertex(unsigned int lb);
+    const unsigned int & getLabel() const;
+    const map<unsigned int,unsigned int>& getEdges() const;
+    void addEdge(unsigned int lb);
 };
 
 #endif

@@ -10,13 +10,15 @@ using namespace std;
 class Random_Graph
 {
 private:
-    int n_vertices;
+    unsigned int n_vertices;
+    unsigned int k_vertices;
     Vertex** vertices;
 
 public:
-    Random_Graph(int n);
+    Random_Graph(unsigned int n);
     void displayAdjacencyList();
     void customIteration();
+    void plantClique(unsigned int k);
 };
 
 #endif
