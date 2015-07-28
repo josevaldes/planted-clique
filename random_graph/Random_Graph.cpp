@@ -37,6 +37,18 @@ Random_Graph::Random_Graph(unsigned int n):n_vertices(n+1), k_vertices(0)
    --n_vertices;
 }
 
+Random_Graph::~Random_Graph()
+{
+    delete[] planted_clique;
+    
+    for(unsigned int i = 0; i <= n_vertices; ++i)
+    {
+        delete vertices[i];
+    }
+    
+    delete[] vertices;
+}
+
 void Random_Graph::displayAdjacencyList()
 {
     cout << "Adjacency List\n";
@@ -120,10 +132,10 @@ void Random_Graph::plantClique(unsigned int k)
 {
     srand(time(0));
     
-    bool indicators[n_vertices + 1];
+    planted_clique = new bool [n_vertices + 1];
     for(unsigned int i = 0; i < n_vertices + 1; ++i)
     {
-        indicators[i] = false;
+        planted_clique[i] = false;
     }
 
     unsigned int k_elem[k];
@@ -132,43 +144,27 @@ void Random_Graph::plantClique(unsigned int k)
     {
         unsigned int index = (rand() % n_vertices) + 1;
 	
-	if(!indicators[index])
+	if(!planted_clique[index])
 	{
 	    k_elem[k_vertices] = index;
-
             ++k_vertices;
-	    indicators[index] = true;
+	    planted_clique[index] = true;
 	}
 
     }
 
 
-    cout << "Clique planted in vertices:\n"; 
-    
+    //cout << "Clique planted in vertices:\n"; 
+
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
-        cout << "  v" << k_elem[i]<< endl;
-    }
-    
-    for(unsigned int i = 0; i < k_vertices; ++i)
-    {
+       // cout << "  v" << k_elem[i]<< endl;
         for(unsigned int j = i + 1; j < k_vertices; ++j)
 	{
             vertices[k_elem[i]]->addEdge(k_elem[j]);
 	    vertices[k_elem[j]]->addEdge(k_elem[i]);
 	}
     }
-
-
-    planted_clique = new Vertex*[k_vertices];
-    
-    for(unsigned int i = 0; i < k_vertices; ++i)
-    {
-	planted_clique[i] = vertices[k_elem[i]];
-    }
-
-    sort(planted_clique, planted_clique + k_vertices, degreeCmp());
-    
     
 }
 
@@ -178,9 +174,13 @@ void Random_Graph::kuceraAlg()
     Vertex** highest_degrees = vertices;
     sort(highest_degrees, highest_degrees+n_vertices+1, degreeCmp());
     
+    //cout << "Kucera Vertices:\n";
+
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
-       if(highest_degrees[i]->getDegree() != planted_clique[i]->getDegree())
+      // cout << "   v" << highest_degrees[i]->label<<endl;
+       int kucera_index = highest_degrees[i]->label;
+       if(!planted_clique[kucera_index])
        {
            ++errors;
        }
