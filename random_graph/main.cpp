@@ -51,6 +51,10 @@ int main(int argc, char* argv[])
    {
        G.plantClique(planted_vertices);
    }
-   // G.customIteration();
+   
+  G.displayAdjacencyList();
+  // G.customIteration();
+  G.kuceraAlg();
+   
    return 0;
 }
