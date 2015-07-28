@@ -1,3 +1,4 @@
+#include <algorithm>
 #include <iostream>
 #include <string>
 #include <sstream>
@@ -40,13 +41,13 @@ void Random_Graph::displayAdjacencyList()
 {
     cout << "Adjacency List\n";
 
-    for(unsigned int i = 1; i < n_vertices; ++i)
+    for(unsigned int i = 1; i <= n_vertices; ++i)
     {
         cout << "Vertex " << i <<":\n";
+	cout << "Degree: " << vertices[i]->degree << endl;
 
-	map<unsigned int,unsigned int> currEdges = vertices[i]->getEdges();
 
-	for(map<unsigned int,unsigned int>::iterator it = currEdges.begin(); it != currEdges.end(); ++it)
+	for(map<unsigned int,unsigned int>::iterator it = vertices[i]->edges.begin(); it != vertices[i]->edges.end(); ++it)
 	{
             cout << "   v"<< it->first<<endl;
 	}
@@ -66,13 +67,16 @@ void Random_Graph::customIteration()
     while(!quit)
     {
        cout<< "Current vertex: " << iterator <<endl;
+       cout << "Degree: " << vertices[iterator]->degree << endl;
        cout<< "Adjacent vertices: "<<endl;
-       
-       map<unsigned int,unsigned int> currEdges = vertices[iterator]->getEdges();
-       for(map<unsigned int,unsigned int>::iterator it = currEdges.begin(); it != currEdges.end(); ++it)
+      
+       for(map<unsigned int,unsigned int>::iterator it = vertices[iterator]->edges.begin(); it != vertices[iterator]->edges.end(); ++it)
        {
-           cout << "   v"<< it->first<<endl;
-       }
+           if(it->second != 0)
+	   {
+	       cout << "   v"<< it->first<<endl;
+	   }
+       }   
 
        while(true)
        {
@@ -99,7 +103,7 @@ void Random_Graph::customIteration()
            break;
        }
 	   
-       if(currEdges[temp] == 0)
+       if(vertices[iterator]->edges[temp] == 0)
        {
            cerr << "The vertex " << temp << " is not adjacent to current vertex"<<endl;
            cerr << "Pick again\n";
@@ -138,7 +142,8 @@ void Random_Graph::plantClique(unsigned int k)
 
     }
 
-    cout << "Clique planted in vertices:\n";
+
+    cout << "Clique planted in vertices:\n"; 
     
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
@@ -153,6 +158,34 @@ void Random_Graph::plantClique(unsigned int k)
 	    vertices[k_elem[j]]->addEdge(k_elem[i]);
 	}
     }
+
+
+    planted_clique = new Vertex*[k_vertices];
+    
+    for(unsigned int i = 0; i < k_vertices; ++i)
+    {
+	planted_clique[i] = vertices[k_elem[i]];
+    }
+
+    sort(planted_clique, planted_clique + k_vertices, degreeCmp());
+    
+    
+}
+
+void Random_Graph::kuceraAlg()
+{
+    unsigned int errors = 0;
+    Vertex** highest_degrees = vertices;
+    sort(highest_degrees, highest_degrees+n_vertices+1, degreeCmp());
+    
+    for(unsigned int i = 0; i < k_vertices; ++i)
+    {
+       if(highest_degrees[i]->getDegree() != planted_clique[i]->getDegree())
+       {
+           ++errors;
+       }
+    }
+    cout << "Kucera algorithm has "<< errors << " wrong vertices\n";
     
 }
 
