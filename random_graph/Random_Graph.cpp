@@ -20,16 +20,26 @@ Random_Graph::Random_Graph(unsigned int n):n_vertices(n+1), k_vertices(0)
        vertices[i] = new Vertex(i);
    }
 
+   float one_percent = (float)n_vertices / 100;
+   float percent = one_percent;
+   float status = 1;
    for(unsigned int u = 1; u < n_vertices; ++u)
    {
-       for(unsigned int v = u + 1; v < n_vertices; ++v)
+	   while (u >= percent)
+	   {
+		   cout << status << "% of random vertices done" << endl;
+		   percent += one_percent;
+		   ++status;
+	   }
+
+	   for(unsigned int v = u + 1; v < n_vertices; ++v)
        {
 	   unsigned int indicator = rand() % 2;
 	   
            if(indicator)
            {
                vertices[u]->addEdge(v);
-	       vertices[v]->addEdge(u);
+	           vertices[v]->addEdge(u);
            }
        }
    }
@@ -138,7 +148,7 @@ void Random_Graph::plantClique(unsigned int k)
         planted_clique[i] = false;
     }
 
-    unsigned int k_elem[k];
+    vector<unsigned int> k_elem(k);
 
     while(k_vertices < k)
     {
@@ -155,15 +165,24 @@ void Random_Graph::plantClique(unsigned int k)
 
 
     //cout << "Clique planted in vertices:\n"; 
+	float one_percent = (float)k_vertices / 100;
+	float percent = one_percent;
+	float status = 1;
 
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
        // cout << "  v" << k_elem[i]<< endl;
+		while (i >= percent)
+		{
+			cout << status << "% of planted cliques done" << endl;
+			percent += one_percent;
+			++status;
+		}
         for(unsigned int j = i + 1; j < k_vertices; ++j)
-	{
+	    {
             vertices[k_elem[i]]->addEdge(k_elem[j]);
-	    vertices[k_elem[j]]->addEdge(k_elem[i]);
-	}
+	        vertices[k_elem[j]]->addEdge(k_elem[i]);
+	    }
     }
     
 }
@@ -172,12 +191,23 @@ void Random_Graph::kuceraAlg()
 {
     unsigned int errors = 0;
     Vertex** highest_degrees = vertices;
-    sort(highest_degrees, highest_degrees+n_vertices+1, degreeCmp());
-    
-    //cout << "Kucera Vertices:\n";
 
+	cerr << "Starting the sorting of vertices degree\n";
+    sort(highest_degrees, highest_degrees+n_vertices+1, degreeCmp());
+	cerr << "Sorting done\n";
+    //cout << "Kucera Vertices:\n";
+	float one_percent = (float)k_vertices / 100;
+	float percent = one_percent;
+	float status = 1;
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
+		while (i >= percent)
+		{
+			cout << status << "% of kucera cliques done" << endl;
+			percent += one_percent;
+			++status;
+		}
+		
       // cout << "   v" << highest_degrees[i]->label<<endl;
        int kucera_index = highest_degrees[i]->label;
        if(!planted_clique[kucera_index])
