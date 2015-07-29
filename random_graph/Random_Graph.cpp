@@ -20,21 +20,43 @@ Random_Graph::Random_Graph(unsigned int n):n_vertices(n+1), k_vertices(0)
        vertices[i] = new Vertex(i);
    }
 
+   float one_percent = (float)n_vertices / 100;
+   float percent = one_percent;
+   float status = 1;
    for(unsigned int u = 1; u < n_vertices; ++u)
    {
-       for(unsigned int v = u + 1; v < n_vertices; ++v)
+	   while (u >= percent)
+	   {
+		   cout << status << "% of random vertices done" << endl;
+		   percent += one_percent;
+		   ++status;
+	   }
+
+	   for(unsigned int v = u + 1; v < n_vertices; ++v)
        {
 	   unsigned int indicator = rand() % 2;
 	   
            if(indicator)
            {
                vertices[u]->addEdge(v);
-	       vertices[v]->addEdge(u);
+	           vertices[v]->addEdge(u);
            }
        }
    }
 
    --n_vertices;
+}
+
+Random_Graph::~Random_Graph()
+{
+    delete[] planted_clique;
+    
+    for(unsigned int i = 0; i <= n_vertices; ++i)
+    {
+        delete vertices[i];
+    }
+    
+    delete[] vertices;
 }
 
 void Random_Graph::displayAdjacencyList()
@@ -120,55 +142,48 @@ void Random_Graph::plantClique(unsigned int k)
 {
     srand(time(0));
     
-    bool indicators[n_vertices + 1];
+    planted_clique = new bool [n_vertices + 1];
     for(unsigned int i = 0; i < n_vertices + 1; ++i)
     {
-        indicators[i] = false;
+        planted_clique[i] = false;
     }
 
-    unsigned int k_elem[k];
+    vector<unsigned int> k_elem(k);
 
     while(k_vertices < k)
     {
         unsigned int index = (rand() % n_vertices) + 1;
 	
-	if(!indicators[index])
+	if(!planted_clique[index])
 	{
 	    k_elem[k_vertices] = index;
-
             ++k_vertices;
-	    indicators[index] = true;
+	    planted_clique[index] = true;
 	}
 
     }
 
 
-    cout << "Clique planted in vertices:\n"; 
-    
+    //cout << "Clique planted in vertices:\n"; 
+	float one_percent = (float)k_vertices / 100;
+	float percent = one_percent;
+	float status = 1;
+
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
-        cout << "  v" << k_elem[i]<< endl;
-    }
-    
-    for(unsigned int i = 0; i < k_vertices; ++i)
-    {
+       // cout << "  v" << k_elem[i]<< endl;
+		while (i >= percent)
+		{
+			cout << status << "% of planted cliques done" << endl;
+			percent += one_percent;
+			++status;
+		}
         for(unsigned int j = i + 1; j < k_vertices; ++j)
-	{
+	    {
             vertices[k_elem[i]]->addEdge(k_elem[j]);
-	    vertices[k_elem[j]]->addEdge(k_elem[i]);
-	}
+	        vertices[k_elem[j]]->addEdge(k_elem[i]);
+	    }
     }
-
-
-    planted_clique = new Vertex*[k_vertices];
-    
-    for(unsigned int i = 0; i < k_vertices; ++i)
-    {
-	planted_clique[i] = vertices[k_elem[i]];
-    }
-
-    sort(planted_clique, planted_clique + k_vertices, degreeCmp());
-    
     
 }
 
@@ -176,11 +191,26 @@ void Random_Graph::kuceraAlg()
 {
     unsigned int errors = 0;
     Vertex** highest_degrees = vertices;
+
+	cerr << "Starting the sorting of vertices degree\n";
     sort(highest_degrees, highest_degrees+n_vertices+1, degreeCmp());
-    
+	cerr << "Sorting done\n";
+    //cout << "Kucera Vertices:\n";
+	float one_percent = (float)k_vertices / 100;
+	float percent = one_percent;
+	float status = 1;
     for(unsigned int i = 0; i < k_vertices; ++i)
     {
-       if(highest_degrees[i]->getDegree() != planted_clique[i]->getDegree())
+		while (i >= percent)
+		{
+			cout << status << "% of kucera cliques done" << endl;
+			percent += one_percent;
+			++status;
+		}
+		
+      // cout << "   v" << highest_degrees[i]->label<<endl;
+       int kucera_index = highest_degrees[i]->label;
+       if(!planted_clique[kucera_index])
        {
            ++errors;
        }

@@ -13,7 +13,7 @@ private:
     unsigned int n_vertices;
     unsigned int k_vertices;
     Vertex** vertices;
-    Vertex** planted_clique;
+    bool* planted_clique;
 
 public:
     Random_Graph(unsigned int n);
@@ -21,6 +21,7 @@ public:
     void customIteration();
     void plantClique(unsigned int k);
     void kuceraAlg();
+    ~Random_Graph();
 };
 
 

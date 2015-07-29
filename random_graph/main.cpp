@@ -44,17 +44,19 @@ int main(int argc, char* argv[])
        return -1;
    }
 
-
+   cerr << "Creating random graph\n";
    Random_Graph G = Random_Graph(number_vertices);
    
    if(planted_vertices > 0)
    {
+	   cerr << "Planting Cliques\n";
        G.plantClique(planted_vertices);
    }
    
-  G.displayAdjacencyList();
+ // G.displayAdjacencyList();
   // G.customIteration();
-  G.kuceraAlg();
+   cerr << "Starting Kucera algorithm\n";
+   G.kuceraAlg();
    
    return 0;
 }
