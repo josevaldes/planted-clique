@@ -25,21 +25,21 @@ Random_Graph::Random_Graph(unsigned int n):n_vertices(n+1), k_vertices(0)
    float status = 1;
    for(unsigned int u = 1; u < n_vertices; ++u)
    {
-	   while (u >= percent)
-	   {
-		   cout << status << "% of random vertices done" << endl;
+        while (u >= percent)
+        {
+ 	    cout << status << "% of random vertices done" << endl;
 		   percent += one_percent;
 		   ++status;
-	   }
+	}
 
-	   for(unsigned int v = u + 1; v < n_vertices; ++v)
+       for(unsigned int v = u + 1; v < n_vertices; ++v)
        {
 	   unsigned int indicator = rand() % 2;
 	   
            if(indicator)
            {
                vertices[u]->addEdge(v);
-	           vertices[v]->addEdge(u);
+	       vertices[v]->addEdge(u);
            }
        }
    }
@@ -190,12 +190,15 @@ void Random_Graph::plantClique(unsigned int k)
 void Random_Graph::kuceraAlg()
 {
     unsigned int errors = 0;
-    Vertex** highest_degrees = vertices;
+    vector<Vertex*> highest_degrees(n_vertices);
+    for(unsigned int i = 0; i <= n_vertices; ++i)
+    {
+        highest_degrees[i] = vertices[i];
+    }
 
 	cerr << "Starting the sorting of vertices degree\n";
-    sort(highest_degrees, highest_degrees+n_vertices+1, degreeCmp());
+    sort(highest_degrees.begin(), highest_degrees.end(), degreeCmp());
 	cerr << "Sorting done\n";
-    //cout << "Kucera Vertices:\n";
 	float one_percent = (float)k_vertices / 100;
 	float percent = one_percent;
 	float status = 1;
@@ -216,6 +219,5 @@ void Random_Graph::kuceraAlg()
        }
     }
     cout << "Kucera algorithm has "<< errors << " wrong vertices\n";
-    
 }
 
