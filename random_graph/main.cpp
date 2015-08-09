@@ -2,6 +2,7 @@
 #include <string>
 #include <sstream>
 #include "Random_Graph.h"
+#include "Planted_Algorithms.h"
 
 using namespace std;
 
@@ -46,7 +47,8 @@ int main(int argc, char* argv[])
 
    cerr << "Creating random graph\n";
    Random_Graph G = Random_Graph(number_vertices);
-   
+  // Random_Graph GG = G;
+
    if(planted_vertices > 0)
    {
 	   cerr << "Planting Cliques\n";
@@ -55,8 +57,12 @@ int main(int argc, char* argv[])
    
  // G.displayAdjacencyList();
   // G.customIteration();
-   cerr << "Starting Kucera algorithm\n";
-   G.kuceraAlg();
+   cerr << "Starting LDR algorithm\n";
+
+  // G.kuceraAlg();
+   G.LDDR_Alg();
+
+   //GG.kuceraAlg();
    
    return 0;
 }
