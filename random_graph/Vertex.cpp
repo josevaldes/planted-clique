@@ -54,7 +54,7 @@ bool degreeCmp::operator()(Vertex* lhs, Vertex* rhs)
         return lhs->getDegree() > rhs->getDegree();
     }
 
-    return lhs->getLabel() > rhs->getLabel();
+    return lhs->getLabel() < rhs->getLabel();
 }
 
 

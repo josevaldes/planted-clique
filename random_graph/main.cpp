@@ -1,13 +1,15 @@
 #include <iostream>
 #include <string>
 #include <sstream>
+#include <stdlib.h>
+#include <time.h>
 #include "Random_Graph.h"
-#include "Planted_Algorithms.h"
 
 using namespace std;
 
 int main(int argc, char* argv[])
 {
+   srand(time(0));
    if(argc < 2 || argc > 3)
    {
        cerr << "Number of parameters incorrect. Enter number of vertices ";
@@ -45,24 +47,47 @@ int main(int argc, char* argv[])
        return -1;
    }
 
-   cerr << "Creating random graph\n";
-   Random_Graph G = Random_Graph(number_vertices);
-  // Random_Graph GG = G;
-
-   if(planted_vertices > 0)
+   float successes = 0;
+   float avg_error = 0;
+   
+   for(int i = 0; i < 1000; ++i)
    {
+       cerr << "Creating random graph\n";
+       Random_Graph G = Random_Graph(number_vertices);
+      // Random_Graph GG = G;
+
+       if(planted_vertices > 0)
+       {
 	   cerr << "Planting Cliques\n";
-       G.plantClique(planted_vertices);
+           G.plantClique(planted_vertices);
+       }
+   
+    //   G.displayAdjacencyList();
+    // G.customIteration();
+    // cerr << "Starting LCD algorithm\n";
+
+       cerr << "Starting Kucera algorithm\n";
+       unsigned int trial = G.kuceraAlg(); 
+       if(trial == 0)
+       {
+           ++successes;
+       }
+
+       else
+       {
+           avg_error += trial;
+       }
+
+    // G.LDDR_Alg();
+      
+    //GG.kuceraAlg();
+    
+   // G.DGGP_Alg();
    }
-   
- // G.displayAdjacencyList();
-  // G.customIteration();
-   cerr << "Starting LDR algorithm\n";
 
-  // G.kuceraAlg();
-   G.LDDR_Alg();
-
-   //GG.kuceraAlg();
+   cout << "Success probability: " << successes / 1000 <<endl;
    
+   cout << "Total errors: " << avg_error << endl;
+   cout << "Average errors: " << avg_error / 1000 << endl;
    return 0;
 }

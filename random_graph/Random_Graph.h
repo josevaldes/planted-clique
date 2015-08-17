@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <math.h>
 #include "Vertex.h"
 
 using namespace std;
@@ -20,16 +21,18 @@ public:
     const unsigned int & get_n_vertices() const;
     const unsigned int & get_k_vertices() const;
     const vector<Vertex*> & getVertices() const;
-    unsigned int getCmpErr(const vector<unsigned int> & possibleClique) const;
+    int getCmpErr(const vector<unsigned int> & possibleClique) const;
     void displayAdjacencyList();
     void customIteration();
     void plantClique(unsigned int k);
-    void kuceraAlg();
+    void clear();
+    unsigned int kuceraAlg();
     void LDR_Alg();
     void LDDR_Alg();
+    void DGGP_Alg();
     ~Random_Graph();
 };
 
-
+double nextInt(double x);
 
 #endif
