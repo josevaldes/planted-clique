@@ -5,6 +5,7 @@
 #include <map>
 #include <stdlib.h>
 #include <ctime>
+#include <queue>
 #include "Vertex.h"
 #include "Random_Graph.h"
 
@@ -12,7 +13,7 @@ using namespace std;
 
 Random_Graph::Random_Graph(unsigned int n):n_vertices(n+1), k_vertices(0)
 {
-   vertices = new Vertex*[n_vertices];
+   vertices.reserve(n_vertices);
    srand(time(0));
    
    for(unsigned int i = 0; i < n_vertices; ++i)
@@ -56,9 +57,37 @@ Random_Graph::~Random_Graph()
         delete vertices[i];
     }
     
-    delete[] vertices;
+   // delete[] vertices;
 }
 
+const unsigned int & Random_Graph::get_n_vertices() const
+{
+    return n_vertices;
+}
+
+const unsigned int & Random_Graph::get_k_vertices() const
+{
+    return k_vertices;
+}
+
+const vector<Vertex*> & Random_Graph::getVertices() const
+{
+    return vertices;
+}
+
+unsigned int Random_Graph::getCmpErr(const vector<unsigned int> & possibleClique) const
+{
+    unsigned int errors = 0;
+    for(unsigned int i = 0; i < k_vertices; ++i)
+    {
+        if(!planted_clique[possibleClique[i]])
+	{
+            ++errors;
+	}
+    }
+
+    return errors;
+}
 void Random_Graph::displayAdjacencyList()
 {
     cout << "Adjacency List\n";
@@ -221,3 +250,238 @@ void Random_Graph::kuceraAlg()
     cout << "Kucera algorithm has "<< errors << " wrong vertices\n";
 }
 
+void Random_Graph::LDR_Alg()
+{
+    vector<bool> aliveV(n_vertices + 1, true);
+    vector<unsigned int> planted;
+    priority_queue<Vertex, vector<Vertex>, degreeLessCmp> min_heap;
+    unsigned int n_limit = n_vertices - 1;
+
+   
+    for(unsigned int i = 1; i <= n_vertices; ++i)
+    {
+        min_heap.push(*vertices[i]);
+    }
+
+   
+   Vertex ite = min_heap.top();
+
+   while(ite.getDegree() != n_limit)
+   {
+       min_heap.pop();
+       aliveV[ite.getLabel()] = false;
+       
+       vector<unsigned int> v_neighs = ite.getNeighs();
+       
+
+       for(unsigned int i = 0; i < v_neighs.size(); ++i)
+       {
+	   if(aliveV[v_neighs[i]])
+	   {
+	      --vertices[v_neighs[i]]->degree;
+	      min_heap.push(*vertices[v_neighs[i]]);
+	   }
+       }
+       
+       --n_limit;
+           
+       ite = min_heap.top();
+       while(!aliveV[ite.getLabel()])
+       {
+	   min_heap.pop();
+	   ite = min_heap.top();
+       }
+       
+   }
+
+
+   bool done = false;
+   bool breaking = false;
+
+   while(!done)
+   {
+       planted = ite.getNeighs();
+       for(int i = 0; i < planted.size(); ++i)
+       {
+          if(!aliveV[planted[i]])
+	  {
+             planted.erase(planted.begin()+i);
+	     --i;
+	  }
+       }
+
+       for(int u = 0; u < planted.size(); ++u)
+       {
+           for(int v = u+1; v < planted.size(); ++v)
+	   {
+               if(!vertices[planted[u]]->isNeigh(planted[v]))
+	       {
+	           aliveV[ite.getLabel()] = false;
+                   min_heap.pop();
+		   ite = min_heap.top();
+		   breaking = true;
+		   break;
+	       }
+	   }
+
+	   if(breaking)
+	   {
+              break;
+	   }
+       }
+
+       if(breaking)
+       {
+           breaking = false;
+       }
+
+       else
+       {
+           done = true;
+       }
+   }
+
+   planted.push_back(ite.getLabel());
+
+   for(unsigned int k = 0; k < aliveV.size(); ++k)
+   {
+       if(!aliveV[k])
+       {
+           bool member = true;
+
+	   for(unsigned int l = 0; l < planted.size();++l)
+	   {
+               if(!vertices[k]->isNeigh(planted[l]))
+	       {
+                   member = false;
+		   break;
+	       }
+	   }
+
+	   if(member)
+	   {
+               planted.push_back(k);
+	   }
+       }
+   }
+
+   cout << "Errors in planted clique: " << getCmpErr(planted) << endl;
+}
+
+
+void Random_Graph::LDDR_Alg()
+{
+    vector<bool> aliveV(n_vertices + 1, true);
+    vector<unsigned int> planted;
+    priority_queue<Vertex*, vector<Vertex*>, degreeCmp> min_heap;
+    unsigned int n_limit = n_vertices - 1;
+
+   
+    for(unsigned int i = 1; i <= n_vertices; ++i)
+    {
+        min_heap.push(vertices[i]);
+    }
+
+   Vertex* ite = min_heap.top();
+
+   while(ite->getDegree() != n_limit)
+   {
+       min_heap.pop();
+       aliveV[ite->getLabel()] = false;
+       
+       vector<unsigned int> v_neighs = ite->getNeighs();
+       
+
+       for(unsigned int i = 0; i < v_neighs.size(); ++i)
+       {
+	   if(aliveV[v_neighs[i]])
+	   {
+	      --vertices[v_neighs[i]]->degree;
+	      min_heap.push(vertices[v_neighs[i]]);
+	   }
+       }
+       
+       --n_limit;
+           
+       ite = min_heap.top();
+       while(!aliveV[ite->getLabel()])
+       {
+	   min_heap.pop();
+	   ite = min_heap.top();
+       }
+       
+   }
+
+
+   bool done = false;
+   bool breaking = false;
+
+   while(!done)
+   {
+       planted = ite->getNeighs();
+       for(int i = 0; i < planted.size(); ++i)
+       {
+          if(!aliveV[planted[i]])
+	  {
+             planted.erase(planted.begin()+i);
+	     --i;
+	  }
+       }
+
+       for(int u = 0; u < planted.size(); ++u)
+       {
+           for(int v = u+1; v < planted.size(); ++v)
+	   {
+               if(!vertices[planted[u]]->isNeigh(planted[v]))
+	       {
+	           aliveV[ite->getLabel()] = false;
+                   min_heap.pop();
+		   ite = min_heap.top();
+		   breaking = true;
+		   break;
+	       }
+	   }
+
+	   if(breaking)
+	   {
+              break;
+	   }
+       }
+
+       if(breaking)
+       {
+           breaking = false;
+       }
+
+       else
+       {
+           done = true;
+       }
+   }
+
+   planted.push_back(ite->getLabel());
+
+   for(unsigned int k = 0; k < aliveV.size(); ++k)
+   {
+       if(!aliveV[k])
+       {
+           bool member = true;
+
+	   for(unsigned int l = 0; l < planted.size();++l)
+	   {
+               if(!vertices[k]->isNeigh(planted[l]))
+	       {
+                   member = false;
+		   break;
+	       }
+	   }
+
+	   if(member)
+	   {
+               planted.push_back(k);
+	   }
+       }
+   }
+
+   cout << "Errors in planted clique: " << getCmpErr(planted) << endl;
+}
